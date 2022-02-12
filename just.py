@@ -90,7 +90,7 @@ def searchreco():
         mycursor.execute(query)
         mycon.commit()
     except:
-        if result==None:
+        if result==[]:
             print("Record Not Available")
     input("Press any key to Continue")
     
@@ -120,21 +120,37 @@ def modifystockreco():
                      if ch==1:
                          i1=input("Enter New Item Name -:")
                          query="update stock set itemname='{}' where itemcode={}".format(i1,find)
-                     elif ch==2:
-                         i2=int(input("Enter New Quantity -:"))
-                         query="update stock set qty={} where itemcode={}".format(i2,find)
-                     elif ch==3:
-                         i3=int(input("Enter New Price -:"))
-                         query="update stock set price={} where itemcode={}".format(i3,find)
-                     elif ch==4:
-                         i4=int(input("Enter New Discount -:"))
-                         query="update stock set itemname={} where itemcode={}".format(i4,find)
-                     elif ch==5:
-                         i5=int(input("Enter New DOM (YYYY-MM-DD) -:"))
-                         query="update stock set dom='{}' where itemcode={}".format(i5,find)
-                        
+                         print("Record Modified")
+                     try:
+                         if ch==2:
+                             i2=int(input("Enter New Quantity -:"))
+                             query="update stock set qty={} where itemcode={}".format(i2,find)
+                             print("Record Modified")
+                     except:
+                         print("Error :Please enter a Number")
+                     try:
+                         if ch==3:
+                             i3=int(input("Enter New Price -:"))
+                             query="update stock set price={} where itemcode={}".format(i3,find)
+                             print("Record Modified")
+                     except:
+                         print("Error :Please enter a Number")
+                     try:
+                         if ch==4:
+                             i4=int(input("Enter New Discount -:"))
+                             query="update stock set itemname={} where itemcode={}".format(i4,find)
+                             print("Record Modified")
+                     except:
+                         print("Error :Please enter a Number")
+                     try:
+                         if ch==5:
+                             i5=int(input("Enter New DOM (YYYY-MM-DD) -:"))
+                             query="update stock set dom='{}' where itemcode={}".format(i5,find)
+                             print("Record Modified")
+                     except:
+                         print("Error :Please enter a Number")
               mycursor.execute(query)
-              print("Record Modified")
+              
               query="select * from stock where itemcode="+str(find)
               mycursor.execute(query)
               result=mycursor.fetchone()
@@ -142,8 +158,12 @@ def modifystockreco():
               print(tabulate(modtable))
               mycon.commit()
        except:
+              mycursor.execute(query)
+              query="select * from stock where itemcode="+str(find)
+              mycursor.execute(query)
+              result=mycursor.fetchone()
               if result==None:
-                     print("Record Not Available")
+                   print("Record Not Available")
        input("Press any key to Continue")
 
 while True:
