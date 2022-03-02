@@ -1,18 +1,17 @@
 import mysql.connector as mc
 from tabulate import tabulate
-import os
+import os                                           #connecting python with mysql
 from time import sleep
 clear = lambda: os.system('cls')
 
 mycon=mc.connect(host="localhost",user="root",password="nps@123",database="project")
 if mycon.is_connected():
-    print("connected")
     mycursor=mycon.cursor()
 
 
 def disprecco():
     try:
-        query=("select * from stock")
+        query=("select * from stock")           #displaying the records
         mycursor.execute(query)
         result=mycursor.fetchall()
         table=[["ITEM CODE","ITEM NAME","QUANTITY","PRICE","DISCOUNT","DOM"]]
@@ -26,7 +25,7 @@ def disprecco():
 def addstockreco():
        try:
            itemcode=int(input("Enter Item Code:"))
-           itemname=input("Enter Item Name:")
+           itemname=input("Enter Item Name:")               #adding records
            qty=int(input("Enter Quantity in Stock:"))
            price=float(input("Enter Price of Item:"))
            discount=int(input("Enter Discount % Applicable:"))
@@ -44,7 +43,7 @@ def delstockreco():
         itemd=int(input("Enter Item Code to be Deleted -:"))
         query="select * from stock where itemcode="+str(itemd)
         mycursor.execute(query)
-        result=mycursor.fetchone()
+        result=mycursor.fetchone()          #deleting record
         deltable=[["ITEMCODE","ITEMNAME","QUANTITY","PRICE","DISCOUNT","DOM"]]
         if result!=None:
             deltable.append(list(result))
@@ -67,7 +66,7 @@ def searchreco():
         mycursor.execute(query)
         result=mycursor.fetchone()
         table=[["ITEMCODE","ITEMNAME","QUANTITY","PRICE","DISCOUNT","DOM"]]
-        if result!=None:
+        if result!=None:             #searching record
             table.append(list(result))
             print(tabulate(table))
             print("Record Found And Is Available")
@@ -84,7 +83,7 @@ def modifystockreco():
               mycursor.execute(query)
               result=mycursor.fetchall()
               table=[["ITEMCODE","ITEMNAME","QUANTITY","PRICE","DISCOUNT","DOM"]]
-              for rec in result:
+              for rec in result:            #modifying record
                      table.append(list(rec))
               print(tabulate(table))
               modtable=[["ITEMCODE","ITEMNAME","QUANTITY","PRICE","DISCOUNT","DOM"]]
@@ -137,7 +136,7 @@ def disbuyreco():
        
        table=[["ITEMCODE","ITEMNAME","QUANTITY","PRICE","DISCOUNT","DOM"]]
        result=mycursor.fetchall()
-       for rec in result:
+       for rec in result:                   #displaying records before buying
               table.append(list(rec))
        print(tabulate(table))
     except:
@@ -153,12 +152,10 @@ def purchase():
            p1=int(input("Enter itemcode you want to buy -:"))
            p2=int(input("Enter number of quantity you want to buy -:"))
            mycursor.execute("use project")
-           #query=("select stock.price,stock.discount,stock.qty,sales.amount_pay from stock,sales where stock.itemcode={} and sales.customer_name='{}'").format(p1,i1)
            query=("select stock.price,stock.discount,stock.qty,sales.amount_pay,stock.itemname from stock,sales where stock.itemcode={} and sales.customer_name='{}'").format(p1,i1)
            mycursor.execute(query)
            new=mycursor.fetchone()
-           mycon.commit()
-           #a,b,c,dtot=result
+           mycon.commit()                               #purchasing records
            a,b,c,dtot,e=new
            if dtot==None:
                dtot=0
@@ -169,14 +166,13 @@ def purchase():
                    dtot+=tot*((100-b)/100)
                    tot=p2*(a)
                    trtot=tot*((100-b)/100)
-                   #dtot+=trtot
                    query=("update sales set amount_pay={} where customer_name='{}'").format(dtot,i1)
                    mycursor.execute(query)
                    mycon.commit()
                    query=("update stock set qty={} where itemcode={}").format(d,p1)
                    mycursor.execute(query)
                    mycon.commit()
-                   input("ADDED TO CART,Press to continue")
+                   input("ITEM ADDED TO CART,Please Any Button to continue")
                    tr=[e,p2,a,b,trtot]
                    cart.append(list(tr))
                    ch=input("Would you like to buy more items?(Y/N)")
@@ -195,31 +191,28 @@ def purchase():
               
 
 def viewbill():
-    print("======BILL======")
+    print("======ITEM BILL======")
     print(tabulate(cart))
     query=("select customer_name,amount_pay from sales where customer_name='{}'").format(i1)
     mycursor.execute(query)
     data=mycursor.fetchone()
-    print("======BILL======")
+    print("======TOTAL BILL======")
     table=[["NAME","AMOUNT PAYABALE"]]
     table.append(list(data))
-    print(tabulate(table))
+    print(tabulate(table))                  #viewing the amount
     input("Press Enter To Continue")
 
 def adddetail():
     global i1
-    i1=input("Enter Customer Name -:")
-    if i1=='':
+    i1=input("Enter Unique Customer Name -:")
+    if i1=='':                                          #customer details
         ch=0
         print("Please Enter Your Name")
     elif i1.isdigit():
         print("ERROR--Please Enter Your Correct Name !!")
     else:
         print("Your Name is-",i1)
-
-    #i2=int(input("Enter Customer Phone Number -:"))
-    global i2
-    i2=input("Enter Your Phone Number -:")
+    i2=int(input("Enter Your Phone Number -:"))
     query="insert into sales(customer_name,phone_no) values('{}',{})".format(i1,i2)
     mycursor.execute(query)
     mycon.commit()
@@ -232,7 +225,7 @@ def dispsale():
         result=mycursor.fetchall()
         table=[["NAME","PHONE NO.","AMOUNT RECIEVED"]]
         for rec in result:
-            table.append(list(rec))
+            table.append(list(rec))                         #displaying the total sale
         print(tabulate(table))
     except:
         print("Invalid Input")
